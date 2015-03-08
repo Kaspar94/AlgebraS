@@ -85,7 +85,41 @@ class Matrix {
 			}
 		}
 	}
-
+	
+		public void liida(Matrix b) {
+		if (this.list.size() != b.list.size()) {
+			System.out.println("Selliseid maatrikseid ei saa liita.");
+		}
+		else {
+			try {
+				for (int i = 0; i < b.list.size(); i++) {
+					for (int s = 0; s < b.list.get(i).size(); s++) {
+						this.list.get(i).set(s, b.list.get(i).get(s) + this.list.get(i).get(s));
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("Maatrikseid ei õnnestunud liita.");
+			}
+			
+		}	
+	}
+	
+	public Matrix transponeeri() {
+		ArrayList<ArrayList<Double>> copy = new ArrayList<ArrayList<Double>>();
+		ArrayList<Double> sisemine = new ArrayList<Double>();
+		for (int i = 0; i < this.getCols();i++) {
+			for (int s = 0; s < this.getRows();s++) {
+				sisemine.add(this.list.get(s).get(i));
+				
+			}
+			sisemine.clear();
+			copy.add(sisemine);
+		}
+		return new Matrix(copy);
+		
+		
+	}
+	
 	public Matrix multiply_matrix(Matrix b) { // returns new Matrix
 		if (this.cols != b.getRows()) { // kontrollime, kas saab korrutada.
 			System.out.println("Column count of a doesnt match row count of b"
