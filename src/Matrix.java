@@ -104,21 +104,23 @@ class Matrix {
 		}	
 	}
 	
-	public Matrix transponeeri() {
-		ArrayList<ArrayList<Double>> copy = new ArrayList<ArrayList<Double>>();
-		ArrayList<Double> sisemine = new ArrayList<Double>();
-		for (int i = 0; i < this.getCols();i++) {
-			for (int s = 0; s < this.getRows();s++) {
-				sisemine.add(this.list.get(s).get(i));
-				
+	public void transponeeri() {
+		double[][] temp = new double[this.cols][this.rows];
+		for (int i = 0; i < this.getRows(); i++) {
+			for (int s = 0; s < this.getCols(); s++) {
+				temp[s][i] = this.list.get(i).get(s);
 			}
-			sisemine.clear();
-			copy.add(sisemine);
 		}
-		return new Matrix(copy);
-		
-		
+		this.list.clear();
+		for (int i = 0; i < temp.length; i++) {
+			this.list.add(new ArrayList<Double>());
+			for (int j = 0; j < temp[i].length; j++) {
+				this.list.get(i).add(temp[i][j]);
+			}
+		}
 	}
+
+
 	
 	public Matrix multiply_matrix(Matrix b) { // returns new Matrix
 		if (this.cols != b.getRows()) { // kontrollime, kas saab korrutada.
