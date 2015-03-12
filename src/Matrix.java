@@ -90,6 +90,9 @@ class Matrix {
 		if (this.list.size() != b.list.size()) {
 			System.out.println("Selliseid maatrikseid ei saa liita.");
 		}
+		else if (this.cols != b.cols) {
+			System.out.println("Selliseid maatrikseid ei saa liita.");
+		}
 		else {
 			try {
 				for (int i = 0; i < b.list.size(); i++) {
