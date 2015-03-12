@@ -26,18 +26,26 @@ class Determinant extends Matrix {
 		}
 	}
 	
-	public double sarrus() throws FailException {
+	private double sarrus() throws FailException {
 
 		 double sum = 0;
 		 if (dRows == 3 && dCols == 3) {
 			sum+= matrixList.get(0).get(0)*matrixList.get(1).get(1)*matrixList.get(2).get(2) + matrixList.get(1).get(0)*matrixList.get(2).get(1)*matrixList.get(0).get(2) +
 					matrixList.get(0).get(1)*matrixList.get(1).get(2)*matrixList.get(2).get(0) - matrixList.get(0).get(2)*matrixList.get(1).get(1)*matrixList.get(2).get(0) -
 					matrixList.get(0).get(1)*matrixList.get(1).get(0)*matrixList.get(2).get(2) - matrixList.get(0).get(0)*matrixList.get(1).get(2)*matrixList.get(2).get(1);
-			System.out.print("Maatriksi determinant on " + sum);
+			return sum;
 				 
 		 } else {
 		 	throw new FailException();
 		 }
+	}
+	
+	public void getSarrus() {
+		try {
+			System.out.println(this.sarrus());
+		} catch(Exception e) {
+		}
+		
 	}
 	
 	public double x2() throws FailException {
