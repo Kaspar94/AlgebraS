@@ -12,6 +12,18 @@ class Determinant extends Matrix {
 		dCols = a.getCols();
 	}
 	
+	public int getDrows() {
+		return dRows;
+	}
+	
+	public int getDcols() {
+		return dCols;
+	}
+	
+	public ArrayList<ArrayList<Double>> getMatrixlist(){
+		return matrixList;
+	}
+	
 	@Override
 	public void print() {
 		for (ArrayList<Double> rida : this.matrixList) {
@@ -120,5 +132,40 @@ class Determinant extends Matrix {
 		}
 		return new Determinant(new Matrix(main));
 	}
+	public void poordMat() {
+		
+		double [][] temp = new double[this.dRows][this.dCols];
+		
+		if (this.dCols == dRows) {
+			if (this.calculate_det() != 0) {
+				System.out.println("Maatriksi ");
+				this.print();
+				double kordaja = 1/this.calculate_det();
+	
+				for (int i = 0;i<this.matrixList.size();i++) {
+					for (int s = 0; s<this.matrixList.get(i).size();s++) {
+						temp [i][s] = Algebraline_taiend(this,i,s).calculate_det();
+						
+					}
+				}
+				this.matrixList.clear();
+				for (int i = 0; i < temp.length; i++) {
+					this.matrixList.add(new ArrayList<Double>());
+					for (int j = 0; j < temp[i].length; j++) {
+						this.matrixList.get(i).add(temp[i][j]);
+					}
+				}
+				
+				Matrix uus = new Matrix(this);
+				System.out.println("Pöördmaatriks on selline maatriks " );
+				uus.print();
+				System.out.println(",mis tuleb korrutada arvuga " + kordaja);
+				uus.multiply(kordaja);
+				uus.print();
+			}
+		
+		}
+	}
+
 
 }
