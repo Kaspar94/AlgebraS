@@ -144,7 +144,14 @@ class Determinant extends Matrix {
 	
 				for (int i = 0;i<this.matrixList.size();i++) {
 					for (int s = 0; s<this.matrixList.get(i).size();s++) {
-						temp [i][s] = Algebraline_taiend(this,i,s).calculate_det();
+						int aste = i + s;
+						if (aste%2 == 0) {
+							temp [i][s] = (Algebraline_taiend(this,i,s).calculate_det());
+						}
+						else {
+							temp [i][s] = (Algebraline_taiend(this,i,s).calculate_det())*-1;
+						}
+						
 						
 					}
 				}
