@@ -9,6 +9,12 @@ class Matrix {
 	public Matrix() { // tavaline konstruktor
 		this.list = new ArrayList<ArrayList<Double>>();
 	}
+	
+	public Matrix(Determinant a) {
+		this.rows = a.getDrows();
+		this.cols = a.getDcols();
+		this.list = a.getMatrixlist();
+	}
 
 	public Matrix(Scanner sc) { // k2surealt konstruktor
 		System.out
