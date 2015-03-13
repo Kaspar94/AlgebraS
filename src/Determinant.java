@@ -157,6 +157,7 @@ class Determinant extends Matrix {
 				}
 				
 				Matrix uus = new Matrix(this);
+				uus.transponeeri();
 				System.out.println("Pöördmaatriks on selline maatriks " );
 				uus.print();
 				System.out.println(",mis tuleb korrutada arvuga " + kordaja);
