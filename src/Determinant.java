@@ -1,17 +1,36 @@
 package projekt;
+
 import java.util.ArrayList;
 
 class Determinant extends Matrix {
 	private ArrayList<ArrayList<Double>> matrixList;
 	private int dRows;
 	private int dCols;
-	
+
+	public Determinant(ArrayList<ArrayList<Double>> list) {
+		this.matrixList = (ArrayList<ArrayList<Double>>) list.clone();
+		this.dRows = list.size();
+		this.dCols = list.get(0).size();
+	}
+
 	public Determinant(Matrix a) {
 		matrixList = a.getList();
 		dRows = a.getRows();
 		dCols = a.getCols();
 	}
-	
+
+	public int getDrows() {
+		return dRows;
+	}
+
+	public int getDcols() {
+		return dCols;
+	}
+
+	public ArrayList<ArrayList<Double>> getMatrixlist() {
+		return matrixList;
+	}
+
 	@Override
 	public void print() {
 		for (ArrayList<Double> rida : this.matrixList) {
@@ -25,21 +44,35 @@ class Determinant extends Matrix {
 			System.out.println();
 		}
 	}
-	
-	public double sarrus() throws FailException {
 
-		 double sum = 0;
-		 if (dRows == 3 && dCols == 3) {
-			sum+= matrixList.get(0).get(0)*matrixList.get(1).get(1)*matrixList.get(2).get(2) + matrixList.get(1).get(0)*matrixList.get(2).get(1)*matrixList.get(0).get(2) +
-					matrixList.get(0).get(1)*matrixList.get(1).get(2)*matrixList.get(2).get(0) - matrixList.get(0).get(2)*matrixList.get(1).get(1)*matrixList.get(2).get(0) -
-					matrixList.get(0).get(1)*matrixList.get(1).get(0)*matrixList.get(2).get(2) - matrixList.get(0).get(0)*matrixList.get(1).get(2)*matrixList.get(2).get(1);
-			System.out.print("Maatriksi determinant on " + sum);
-				 
-		 } else {
-		 	throw new FailException();
-		 }
+	private double sarrus() throws FailException {
+
+		double sum = 0;
+		if (dRows == 3 && dCols == 3) {
+			sum += matrixList.get(0).get(0) * matrixList.get(1).get(1)
+					* matrixList.get(2).get(2) + matrixList.get(1).get(0)
+					* matrixList.get(2).get(1) * matrixList.get(0).get(2)
+					+ matrixList.get(0).get(1) * matrixList.get(1).get(2)
+					* matrixList.get(2).get(0) - matrixList.get(0).get(2)
+					* matrixList.get(1).get(1) * matrixList.get(2).get(0)
+					- matrixList.get(0).get(1) * matrixList.get(1).get(0)
+					* matrixList.get(2).get(2) - matrixList.get(0).get(0)
+					* matrixList.get(1).get(2) * matrixList.get(2).get(1);
+			return sum;
+
+		} else {
+			throw new FailException();
+		}
 	}
-	
+
+	public void getSarrus() {
+		try {
+			System.out.println(this.sarrus());
+		} catch (Exception e) {
+		}
+
+	}
+
 	public double x2() throws FailException {
 		if (this.dRows == 2 && this.dCols == 2) {
 			return this.matrixList.get(0).get(0)
@@ -58,7 +91,7 @@ class Determinant extends Matrix {
 			throw new FailException();
 		}
 	}
-	
+
 	public double calculate_det() {
 		if (this.dCols != this.dRows) {
 			System.out.println("Ruutmaatriks peab olema");
@@ -92,7 +125,7 @@ class Determinant extends Matrix {
 		}
 		return sum;
 	}
-	
+
 	private Determinant Algebraline_taiend(Determinant d, int rida, int veerg) { // tagastab
 																					// algebralise
 																					// taiendi
@@ -111,6 +144,49 @@ class Determinant extends Matrix {
 			}
 		}
 		return new Determinant(new Matrix(main));
+	}
+
+	public void poordMat() {
+
+		double[][] temp = new double[this.dRows][this.dCols];
+
+		if (this.dCols == dRows) {
+			if (this.calculate_det() != 0) {
+				System.out.println("Maatriksi ");
+				this.print();
+				double kordaja = 1 / this.calculate_det();
+
+				for (int i = 0; i < this.matrixList.size(); i++) {
+					for (int s = 0; s < this.matrixList.get(i).size(); s++) {
+						int aste = i + s;
+						if (aste % 2 == 0) {
+							temp[i][s] = (Algebraline_taiend(this, i, s)
+									.calculate_det());
+						} else {
+							temp[i][s] = (Algebraline_taiend(this, i, s)
+									.calculate_det()) * -1;
+						}
+
+					}
+				}
+				this.matrixList.clear();
+				for (int i = 0; i < temp.length; i++) {
+					this.matrixList.add(new ArrayList<Double>());
+					for (int j = 0; j < temp[i].length; j++) {
+						this.matrixList.get(i).add(temp[i][j]);
+					}
+				}
+
+				Matrix uus = new Matrix(this);
+				uus.transponeeri();
+				System.out.println("Pöördmaatriks on selline maatriks ");
+				uus.print();
+				System.out.println(",mis tuleb korrutada arvuga " + kordaja);
+				uus.multiply(kordaja);
+				uus.print();
+			}
+
+		}
 	}
 
 }

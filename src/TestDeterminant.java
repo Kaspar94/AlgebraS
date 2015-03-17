@@ -9,6 +9,10 @@ public class TestDeterminant {
 		Matrix a = new Matrix(sc);
 		Determinant ofA = new Determinant(a);
 		ofA.sarrus();
+		Scanner sc = new Scanner(System.in);
+		Determinant b = new Determinant(sc);
+		b.cramer();
+		
 		
 	}
 

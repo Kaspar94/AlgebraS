@@ -1,3 +1,7 @@
+package projekt;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -8,6 +12,12 @@ class Matrix {
 
 	public Matrix() { // tavaline konstruktor
 		this.list = new ArrayList<ArrayList<Double>>();
+	}
+
+	public Matrix(Determinant a) {
+		this.rows = a.getDrows();
+		this.cols = a.getDcols();
+		this.list = a.getMatrixlist();
 	}
 
 	public Matrix(Scanner sc) { // k2surealt konstruktor
@@ -48,7 +58,45 @@ class Matrix {
 	}
 
 	public Matrix(String filename) {
+		this.list = new ArrayList<ArrayList<Double>>();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(filename));
+			String line = reader.readLine();
+			int rowCount = 0;
+			while (line != null) {
+				String[] row = line.split(" ");
+				// kontrollime, kas koik read yhepikkkused
+				if (this.kontrolli_pikkust(row.length) == false) {
+					System.out
+							.println("Read peavad olema yhepikkused! Programm sulgub. Vaadake fail Yle.");
+					reader.close();
+					System.exit(0);
+				}
+				this.cols = row.length;
+				// lisame rea
+				list.add(new ArrayList<Double>());
+				// lisame iga elemendi listi.
 
+				for (String s : row) {
+					try {
+						double temp = Double.parseDouble(s);
+						list.get(rowCount).add(temp);
+					} catch (Exception e) {
+						System.out
+								.println("Viga maatriksi rea sisse lugemisega. Vaadake fail yle."
+										+ e);
+						reader.close();
+						return;
+					}
+				}
+				rowCount += 1; // l2hme j2rgmise rea juurde
+				line = reader.readLine();
+			}
+			this.rows = rowCount;
+			reader.close();
+		} catch (Exception e) {
+			System.out.println("Viga" + e);
+		}
 	}
 
 	public Matrix(ArrayList<ArrayList<Double>> t) {
@@ -85,25 +133,27 @@ class Matrix {
 			}
 		}
 	}
-	
-		public void liida(Matrix b) {
+
+	public void liida(Matrix b) {
 		if (this.list.size() != b.list.size()) {
 			System.out.println("Selliseid maatrikseid ei saa liita.");
-		}
-		else {
+		} else if (this.cols != b.cols) {
+			System.out.println("Selliseid maatrikseid ei saa liita.");
+		} else {
 			try {
 				for (int i = 0; i < b.list.size(); i++) {
 					for (int s = 0; s < b.list.get(i).size(); s++) {
-						this.list.get(i).set(s, b.list.get(i).get(s) + this.list.get(i).get(s));
+						this.list.get(i).set(s,
+								b.list.get(i).get(s) + this.list.get(i).get(s));
 					}
 				}
 			} catch (Exception e) {
 				System.out.println("Maatrikseid ei õnnestunud liita.");
 			}
-			
-		}	
+
+		}
 	}
-	
+
 	public void transponeeri() {
 		double[][] temp = new double[this.cols][this.rows];
 		for (int i = 0; i < this.getRows(); i++) {
@@ -120,8 +170,6 @@ class Matrix {
 		}
 	}
 
-
-	
 	public Matrix multiply_matrix(Matrix b) { // returns new Matrix
 		if (this.cols != b.getRows()) { // kontrollime, kas saab korrutada.
 			System.out.println("Column count of a doesnt match row count of b"
