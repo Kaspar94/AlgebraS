@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class MatrixOperations extends Application {
+public class MatrixInterface extends Application {
 	private static VBox matA, matB;
 	private HBox root;
 	private int colsA, colsB;
