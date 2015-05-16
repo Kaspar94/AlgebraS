@@ -1,9 +1,11 @@
-package projekt;
+package application;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javafx.scene.control.Alert;
 
 class Matrix {
 	private int rows = 0;
@@ -134,11 +136,11 @@ class Matrix {
 		}
 	}
 
-	public void liida(Matrix b) {
+	public void liida(Matrix b) throws Exception {
 		if (this.list.size() != b.list.size()) {
-			System.out.println("Selliseid maatrikseid ei saa liita.");
+			throw new Exception("Ridade arvud peavad yhtima.");
 		} else if (this.cols != b.cols) {
-			System.out.println("Selliseid maatrikseid ei saa liita.");
+			throw new Exception("Veergude arvud peavad yhtima");
 		} else {
 			try {
 				for (int i = 0; i < b.list.size(); i++) {
@@ -147,8 +149,8 @@ class Matrix {
 								b.list.get(i).get(s) + this.list.get(i).get(s));
 					}
 				}
-			} catch (Exception e) {
-				System.out.println("Maatrikseid ei õnnestunud liita.");
+			} catch (ArrayIndexOutOfBoundsException e) {
+				throw new Exception("Ei onnestunud maatrikseid liita: " + e);
 			}
 
 		}
@@ -168,13 +170,16 @@ class Matrix {
 				this.list.get(i).add(temp[i][j]);
 			}
 		}
+		int tempcol = this.getCols();
+		this.cols = this.getRows();
+		this.rows = tempcol;
+		
 	}
 
-	public Matrix multiply_matrix(Matrix b) { // returns new Matrix
+	public Matrix multiply_matrix(Matrix b) throws Exception { // returns new
+																// Matrix
 		if (this.cols != b.getRows()) { // kontrollime, kas saab korrutada.
-			System.out.println("Column count of a doesnt match row count of b"
-					+ this.cols + " " + b.getRows());
-			return null;
+			throw new Exception("Veergude arv peab olema v]rdne ridade arvuga.");
 		}
 
 		ArrayList<ArrayList<Double>> bList = b.getList();
@@ -203,6 +208,14 @@ class Matrix {
 
 	public int getCols() {
 		return cols;
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+
+	public void setCols(int cols) {
+		this.cols = cols;
 	}
 
 	public ArrayList<ArrayList<Double>> getList() {
