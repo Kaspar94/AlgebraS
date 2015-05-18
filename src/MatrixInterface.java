@@ -100,16 +100,9 @@ public class MatrixInterface extends Application {
 
 					colsA = c; // väärtustab isendivälja kasutaja valitud
 								// veergude arvuga
-
-					// kustutame vanad teksfieldid
 					elementsA = new ArrayList<TextField>();
-
-					if (matA.getChildren().size() == 3) {
-						matA.getChildren().remove(1);
-					}
-					matA.getChildren().add(1,
-							setMatrixDisplay(r, c, elementsA, "A")); // väärtustab
-																		// isendiväljad
+					setMatrixDisplay(r, c, elementsA, "A"); // väärtustab
+															// isendiväljad
 				} catch (NumberFormatException n) { // kui proovitakse
 					errorHandler
 							.newError("Rea ja veeru suurus peavad olema arv.");
@@ -145,11 +138,7 @@ public class MatrixInterface extends Application {
 					colsB = c;
 					// kustutame vanad teksfieldid
 					elementsB = new ArrayList<TextField>();
-					if (matB.getChildren().size() == 3) {
-						matB.getChildren().remove(1);
-					}
-					matB.getChildren().add(1,
-							setMatrixDisplay(r, c, elementsB, "B"));
+					setMatrixDisplay(r, c, elementsB, "B");
 
 				} catch (NumberFormatException n) { // kui proovitakse
 													// skeemitada
@@ -162,13 +151,24 @@ public class MatrixInterface extends Application {
 		return row;
 	}
 
-	private VBox setMatrixDisplay(int r, int c, ArrayList<TextField> elements,
-			String s) { // rows,
+	private void setMatrixDisplay(int r, int c, ArrayList<TextField> elements,
+			String maatriks) { // rows,
+		VBox currentMat;
+		if (maatriks.equals("A")) {
+			currentMat = matA;
+		} else if (maatriks.equals("B")) {
+			currentMat = matB;
+		} else {
+			System.out
+					.println("Viga koodis> setMatrixDisplay viimane argument peab olema A voi B, aga on "
+							+ maatriks);
+			return;
+		}
 		// cols,
 		// loome uued textfieldid
 		elements.clear(); // puhastame et uued lisada
 		VBox vb = new VBox(); // hakkab hoidma ridu
-		Text mat = new Text("Maatriks " + s);
+		Text mat = new Text("Maatriks " + maatriks);
 		vb.getChildren().add(mat);
 		vb.setPadding(new Insets(15, 12, 15, 12));
 		for (int i = 0; i < r; i++) {
@@ -176,6 +176,7 @@ public class MatrixInterface extends Application {
 			for (int j = 0; j < c; j++) {
 				TextField temp = new TextField();
 				temp.textProperty().addListener(new ChangeListener<String>() {
+					// igale TF listener
 					public void changed(ObservableValue<? extends String> arg0,
 							String arg1, String arg2) {
 						errorHandler.resetCount();
@@ -188,7 +189,12 @@ public class MatrixInterface extends Application {
 			}
 			vb.getChildren().add(rida);
 		}
-		return vb;
+		// kui midagi on ees, kustutame.
+		if (currentMat.getChildren().size() == 3) {
+			currentMat.getChildren().remove(1);
+		}
+		// ning lisame..
+		currentMat.getChildren().add(1, vb);
 	}
 
 	private VBox vboxB() {
@@ -200,15 +206,44 @@ public class MatrixInterface extends Application {
 		TextField multiplier = new TextField();
 		multiplier.setPrefSize(50, 20);
 		multiplication.getChildren().addAll(multiply, multiplier);
-		Button liida_b = new Button("Liida maatriks A");
+		Button liida_a = new Button("Liida maatriks A");
 		Button transponeeri = new Button("Transponeeri"); // transp
-		Button korruta_b = new Button("Korruta maatriksiga A");
+		Button korruta_a = new Button("Korruta maatriksiga A");
 		Button det_b = new Button("Arvuta determinant");
 		vastusB = new TextField();
 		vastusB.setPrefSize(50, 20);
 		determinant.getChildren().addAll(det_b, vastusB);
-		vb.getChildren().addAll(puhasta, multiplication, liida_b, transponeeri,
-				korruta_b, determinant);
+		vb.getChildren().addAll(puhasta, multiplication, liida_a, transponeeri,
+				korruta_a, determinant);
+
+		korruta_a.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				try {
+					listA = textFieldToList(elementsA, colsA);
+					listB = textFieldToList(elementsB, colsB);
+					Matrix a = new Matrix(listB);
+					Matrix b = a.multiply_matrix(new Matrix(listA));
+					if (b.getCols() == 0 || b.getRows() == 0) {
+						return;
+					}
+					setMatrixDisplay(b.getRows(), b.getCols(), elementsB, "B"); // loob
+																				// textFieldid
+					listToTextField(b.getList(), elementsB); // väärtustab
+																// textFieldid
+					colsA = b.getCols(); // uuendame veergude arvu
+				} catch (Exception m) {
+					errorHandler.newError(m.getMessage());
+				}
+			}
+		});
+
+		liida_a.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				listA = textFieldToList(elementsA, colsA);
+				listB = textFieldToList(elementsB, colsB);
+				liida_matrix(listB, listA, elementsB);
+			}
+		});
 
 		multiply.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
@@ -226,7 +261,7 @@ public class MatrixInterface extends Application {
 		transponeeri.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				listB = textFieldToList(elementsB, colsB);
-				transponeerija(listB, matB, elementsB);
+				transponeerija(listB, matB, elementsB, "B");
 			}
 		});
 
@@ -275,7 +310,7 @@ public class MatrixInterface extends Application {
 		transponeeri.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				listA = textFieldToList(elementsA, colsA);
-				transponeerija(listA, matA, elementsA);
+				transponeerija(listA, matA, elementsA, "A");
 			}
 		});
 
@@ -297,16 +332,11 @@ public class MatrixInterface extends Application {
 					if (b.getCols() == 0 || b.getRows() == 0) {
 						return;
 					}
-					if (matA.getChildren().size() == 3) {
-						matA.getChildren().remove(1);
-					}
-					matA.getChildren().add(
-							1,
-							setMatrixDisplay(b.getRows(), b.getCols(),
-									elementsA, "A")); // väärtustab
-					listToTextField(b.getList(), elementsA);
-					colsA = b.getCols();
-					// isendiväljad
+					setMatrixDisplay(b.getRows(), b.getCols(), elementsA, "A"); // loob
+																				// textFieldid
+					listToTextField(b.getList(), elementsA); // väärtustab
+																// textFieldid
+					colsA = b.getCols(); // uuendame veergude arvu
 				} catch (Exception m) {
 					errorHandler.newError(m.getMessage());
 				}
@@ -360,19 +390,23 @@ public class MatrixInterface extends Application {
 	}
 
 	private void transponeerija(ArrayList<ArrayList<Double>> list, VBox vb,
-			ArrayList<TextField> elements) {
+			ArrayList<TextField> elements, String maatriks) {
 		if (!list.isEmpty()) {
 			try {
 				Matrix a = new Matrix(list);
 				a.transponeeri();
-				if (matA.getChildren().size() == 3) {
-					matA.getChildren().remove(1);
+				if (maatriks.equals("A")) {
+					setMatrixDisplay(a.getRows(), a.getCols(), elements, "A"); // väärtustab
+					this.colsA = a.getCols();
+				} else if (maatriks.equals("B")) {
+					setMatrixDisplay(a.getRows(), a.getCols(), elements, "B"); // väärtustab
+					this.colsB = a.getCols();
+				} else {
+					System.out
+							.println("Viga koodis> setMatrixDisplay viimane argument peab olema A voi B, aga on "
+									+ maatriks);
+					return;
 				}
-				matA.getChildren().add(
-						1,
-						setMatrixDisplay(a.getRows(), a.getCols(), elements,
-								"A")); // väärtustab
-				this.colsA = a.getCols();
 				listToTextField(a.getList(), elements);
 			} catch (Exception e) {
 				errorHandler.newError(e.getMessage());
