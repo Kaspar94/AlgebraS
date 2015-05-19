@@ -15,17 +15,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class MatrixInterface extends Application {
-	private VBox matA, matB;
+	private static VBox matA, matB;
 	private HBox root;
 	private int colsA, colsB;
 	private ArrayList<TextField> elementsA, elementsB;
+	private ArrayList<TextField> answers;
 	private ArrayList<ArrayList<Double>> listA;
 	private ArrayList<ArrayList<Double>> listB;
 	// private TextField rowCountA, colCountA, rowCountB, colCountB;
 	private TextField vastusA, vastusB;
 	private Error errorHandler;
+	private Scene scene;
 
 	public void start(Stage primaryStage) {
 		errorHandler = new Error();
@@ -49,6 +52,7 @@ public class MatrixInterface extends Application {
 		Scene scene = new Scene(root, 640, 400);
 		primaryStage.setTitle("Operatsioonid maatriksitega");
 		primaryStage.setScene(scene);
+		this.scene = scene;
 		primaryStage.show();
 	}
 
@@ -63,9 +67,11 @@ public class MatrixInterface extends Application {
 		rowCount.setPrefSize(30, 10); // mõõtmed
 		colCount.setPrefSize(30, 10);
 		Button update = new Button("Update A");
-		update.setPrefSize(100, 20); // nupu mõõtmed
+		Button cramer = new Button("Määra Cramer");
+		update.setPrefSize(100, 20);
+		cramer.setPrefSize(100, 20);// nupu mõõtmed
 
-		row.getChildren().addAll(size, rowCount, colCount, update); // lisab
+		row.getChildren().addAll(size, rowCount, colCount, update, cramer); // lisab
 																	// HBoxi
 																	// sulgudes
 																	// olevad
@@ -100,15 +106,52 @@ public class MatrixInterface extends Application {
 
 					colsA = c; // väärtustab isendivälja kasutaja valitud
 								// veergude arvuga
+
+					// kustutame vanad teksfieldid
 					elementsA = new ArrayList<TextField>();
-					setMatrixDisplay(r, c, elementsA, "A"); // väärtustab
-															// isendiväljad
+
+					if (matA.getChildren().size() == 3) {
+						matA.getChildren().remove(1);
+					}
+					matA.getChildren().add(1,
+							setMatrixDisplay(r, c, elementsA, "A")); // väärtustab
+																		// isendiväljad
 				} catch (NumberFormatException n) { // kui proovitakse
 					errorHandler
 							.newError("Rea ja veeru suurus peavad olema arv.");
 				}
 			}
 		});
+		
+		cramer.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				try {
+					errorHandler.resetCount();
+					// saame k'tte soovitutd mootmed
+					int r = Integer.parseInt(rowCount.getText());
+					int c = Integer.parseInt(colCount.getText());
+					colsA = c;
+					// kustutame vanad teksfieldid
+					elementsA = new ArrayList<TextField>();
+					answers = new ArrayList<TextField>();
+					if (matA.getChildren().size() == 3) {
+						matA.getChildren().remove(1);
+					}
+					matA.getChildren().add(1,
+							setCramerDisplay(r, c, elementsA, answers, "A"));
+
+				} catch (NumberFormatException n) { // kui proovitakse
+													// skeemitada
+					errorHandler
+							.newError("Rea ja veeru suurus peavad olema arv.");
+
+				}
+			}
+		});
+				
+		
+		
+		
 		return row; // tagastabki HBoxi
 	}
 
@@ -138,7 +181,11 @@ public class MatrixInterface extends Application {
 					colsB = c;
 					// kustutame vanad teksfieldid
 					elementsB = new ArrayList<TextField>();
-					setMatrixDisplay(r, c, elementsB, "B");
+					if (matB.getChildren().size() == 3) {
+						matB.getChildren().remove(1);
+					}
+					matB.getChildren().add(1,
+							setMatrixDisplay(r, c, elementsB, "B"));
 
 				} catch (NumberFormatException n) { // kui proovitakse
 													// skeemitada
@@ -151,24 +198,13 @@ public class MatrixInterface extends Application {
 		return row;
 	}
 
-	private void setMatrixDisplay(int r, int c, ArrayList<TextField> elements,
-			String maatriks) { // rows,
-		VBox currentMat;
-		if (maatriks.equals("A")) {
-			currentMat = matA;
-		} else if (maatriks.equals("B")) {
-			currentMat = matB;
-		} else {
-			System.out
-					.println("Viga koodis> setMatrixDisplay viimane argument peab olema A voi B, aga on "
-							+ maatriks);
-			return;
-		}
+	private VBox setMatrixDisplay(int r, int c, ArrayList<TextField> elements,
+			String s) { // rows,
 		// cols,
 		// loome uued textfieldid
 		elements.clear(); // puhastame et uued lisada
 		VBox vb = new VBox(); // hakkab hoidma ridu
-		Text mat = new Text("Maatriks " + maatriks);
+		Text mat = new Text("Maatriks " + s);
 		vb.getChildren().add(mat);
 		vb.setPadding(new Insets(15, 12, 15, 12));
 		for (int i = 0; i < r; i++) {
@@ -176,7 +212,6 @@ public class MatrixInterface extends Application {
 			for (int j = 0; j < c; j++) {
 				TextField temp = new TextField();
 				temp.textProperty().addListener(new ChangeListener<String>() {
-					// igale TF listener
 					public void changed(ObservableValue<? extends String> arg0,
 							String arg1, String arg2) {
 						errorHandler.resetCount();
@@ -189,12 +224,64 @@ public class MatrixInterface extends Application {
 			}
 			vb.getChildren().add(rida);
 		}
-		// kui midagi on ees, kustutame.
-		if (currentMat.getChildren().size() == 3) {
-			currentMat.getChildren().remove(1);
+		return vb;
+	}
+	
+	private VBox setCramerDisplay(int r, int c, ArrayList<TextField> elements, ArrayList<TextField> vastused,
+			String s) { // rows,
+		// cols,
+		// loome uued textfieldid
+		elements.clear(); // puhastame et uued lisada
+		vastused.clear();
+		VBox vb = new VBox(); // hakkab hoidma ridu
+		Text mat = new Text("Cramer " + s);
+		vb.getChildren().add(mat);
+		vb.setPadding(new Insets(15, 12, 15, 12));
+		for (int i = 0; i < r; i++) {
+			HBox rida = new HBox(); // igale reale hbox
+			for (int j = 0; j < c; j++) {
+				
+				if (j != c-1) {
+					TextField temp = new TextField();
+					temp.textProperty().addListener(new ChangeListener<String>() {
+						public void changed(ObservableValue<? extends String> arg0,
+								String arg1, String arg2) {
+							errorHandler.resetCount();
+						}
+					});
+					temp.setPrefWidth(45);
+					temp.setPrefHeight(30);
+					elements.add(temp); // et p22seksime hiljem ligi
+					rida.getChildren().add(temp);
+
+				}
+				else {
+					TextField temp = new TextField();
+					TextField vastus = new TextField();
+					temp.textProperty().addListener(new ChangeListener<String>() {
+						public void changed(ObservableValue<? extends String> arg0,
+								String arg1, String arg2) {
+							errorHandler.resetCount();
+						}
+					});
+					vastus.textProperty().addListener(new ChangeListener<String>() {
+						public void changed(ObservableValue<? extends String> arg0,
+								String arg1, String arg2) {
+							errorHandler.resetCount();
+						}
+					});
+					temp.setPrefWidth(45);
+					temp.setPrefHeight(30);
+					vastus.setPrefWidth(35);
+					vastus.setPrefHeight(30);
+					elements.add(temp); // et p22seksime hiljem ligi
+					vastused.add(vastus);
+					rida.getChildren().addAll(temp,vastus);
+				}
+			}
+			vb.getChildren().add(rida);
 		}
-		// ning lisame..
-		currentMat.getChildren().add(1, vb);
+		return vb;
 	}
 
 	private VBox vboxB() {
@@ -206,44 +293,16 @@ public class MatrixInterface extends Application {
 		TextField multiplier = new TextField();
 		multiplier.setPrefSize(50, 20);
 		multiplication.getChildren().addAll(multiply, multiplier);
-		Button liida_a = new Button("Liida maatriks A");
+		Button liida_b = new Button("Liida maatriks A");
 		Button transponeeri = new Button("Transponeeri"); // transp
-		Button korruta_a = new Button("Korruta maatriksiga A");
+		Button korruta_b = new Button("Korruta maatriksiga A");
 		Button det_b = new Button("Arvuta determinant");
+		Button cramer_b = new Button("Kasuta Cramerit");
 		vastusB = new TextField();
 		vastusB.setPrefSize(50, 20);
 		determinant.getChildren().addAll(det_b, vastusB);
-		vb.getChildren().addAll(puhasta, multiplication, liida_a, transponeeri,
-				korruta_a, determinant);
-
-		korruta_a.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent e) {
-				try {
-					listA = textFieldToList(elementsA, colsA);
-					listB = textFieldToList(elementsB, colsB);
-					Matrix a = new Matrix(listB);
-					Matrix b = a.multiply_matrix(new Matrix(listA));
-					if (b.getCols() == 0 || b.getRows() == 0) {
-						return;
-					}
-					setMatrixDisplay(b.getRows(), b.getCols(), elementsB, "B"); // loob
-																				// textFieldid
-					listToTextField(b.getList(), elementsB); // väärtustab
-																// textFieldid
-					colsA = b.getCols(); // uuendame veergude arvu
-				} catch (Exception m) {
-					errorHandler.newError(m.getMessage());
-				}
-			}
-		});
-
-		liida_a.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent e) {
-				listA = textFieldToList(elementsA, colsA);
-				listB = textFieldToList(elementsB, colsB);
-				liida_matrix(listB, listA, elementsB);
-			}
-		});
+		vb.getChildren().addAll(puhasta, multiplication, liida_b, transponeeri,
+				korruta_b, determinant, cramer_b);
 
 		multiply.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
@@ -261,7 +320,7 @@ public class MatrixInterface extends Application {
 		transponeeri.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				listB = textFieldToList(elementsB, colsB);
-				transponeerija(listB, matB, elementsB, "B");
+				transponeerija(listB, matB, elementsB);
 			}
 		});
 
@@ -269,6 +328,12 @@ public class MatrixInterface extends Application {
 			public void handle(MouseEvent e) {
 				listB = textFieldToList(elementsB, colsB);
 				detArvutaja(listB, vastusB);
+			}
+		});
+		
+		cramer_b.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				System.out.println("nupp");
 			}
 		});
 
@@ -288,11 +353,12 @@ public class MatrixInterface extends Application {
 		Button transponeeri = new Button("Transponeeri"); // transp
 		Button korruta_b = new Button("Korruta maatriksiga B");
 		Button det_a = new Button("Arvuta determinant");
+		Button cramer_a = new Button("Kasuta Cramerit");
 		vastusA = new TextField();
 		vastusA.setPrefSize(50, 20);
 		determinant.getChildren().addAll(det_a, vastusA);
 		vb.getChildren().addAll(puhasta, multiplication, liida_b, transponeeri,
-				korruta_b, determinant);
+				korruta_b, determinant, cramer_a);
 
 		multiply.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
@@ -310,7 +376,7 @@ public class MatrixInterface extends Application {
 		transponeeri.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				listA = textFieldToList(elementsA, colsA);
-				transponeerija(listA, matA, elementsA, "A");
+				transponeerija(listA, matA, elementsA);
 			}
 		});
 
@@ -332,11 +398,16 @@ public class MatrixInterface extends Application {
 					if (b.getCols() == 0 || b.getRows() == 0) {
 						return;
 					}
-					setMatrixDisplay(b.getRows(), b.getCols(), elementsA, "A"); // loob
-																				// textFieldid
-					listToTextField(b.getList(), elementsA); // väärtustab
-																// textFieldid
-					colsA = b.getCols(); // uuendame veergude arvu
+					if (matA.getChildren().size() == 3) {
+						matA.getChildren().remove(1);
+					}
+					matA.getChildren().add(
+							1,
+							setMatrixDisplay(b.getRows(), b.getCols(),
+									elementsA, "A")); // väärtustab
+					listToTextField(b.getList(), elementsA);
+					colsA = b.getCols();
+					// isendiväljad
 				} catch (Exception m) {
 					errorHandler.newError(m.getMessage());
 				}
@@ -349,9 +420,17 @@ public class MatrixInterface extends Application {
 				detArvutaja(listA, vastusA);
 			}
 		});
-
+		
+		
+		cramer_a.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				listA = textFieldToList(elementsA, colsA);
+				cramerArvutus(listA);
+				
+			}
+		});
+		
 		return vb;
-
 	}
 
 	private void liida_matrix(ArrayList<ArrayList<Double>> listA,
@@ -390,23 +469,19 @@ public class MatrixInterface extends Application {
 	}
 
 	private void transponeerija(ArrayList<ArrayList<Double>> list, VBox vb,
-			ArrayList<TextField> elements, String maatriks) {
+			ArrayList<TextField> elements) {
 		if (!list.isEmpty()) {
 			try {
 				Matrix a = new Matrix(list);
 				a.transponeeri();
-				if (maatriks.equals("A")) {
-					setMatrixDisplay(a.getRows(), a.getCols(), elements, "A"); // väärtustab
-					this.colsA = a.getCols();
-				} else if (maatriks.equals("B")) {
-					setMatrixDisplay(a.getRows(), a.getCols(), elements, "B"); // väärtustab
-					this.colsB = a.getCols();
-				} else {
-					System.out
-							.println("Viga koodis> setMatrixDisplay viimane argument peab olema A voi B, aga on "
-									+ maatriks);
-					return;
+				if (matA.getChildren().size() == 3) {
+					matA.getChildren().remove(1);
 				}
+				matA.getChildren().add(
+						1,
+						setMatrixDisplay(a.getRows(), a.getCols(), elements,
+								"A")); // väärtustab
+				this.colsA = a.getCols();
 				listToTextField(a.getList(), elements);
 			} catch (Exception e) {
 				errorHandler.newError(e.getMessage());
@@ -435,6 +510,21 @@ public class MatrixInterface extends Application {
 		} catch (Exception i) {
 			errorHandler.newError("Maatriks on vigane." + i);
 		}
+	}
+	
+	private void cramerArvutus(ArrayList<ArrayList<Double>> list) {
+		
+		ArrayList<Double> vastused = new ArrayList<Double>();
+		
+		for (int i = 0; i < answers.size(); i++) {
+			double solution = Double.parseDouble(answers.get(i).getText());
+			System.out.println(solution);
+			vastused.add(solution);
+		}
+		
+		Cramer cramer = new Cramer(list,vastused);
+		System.out.println(cramer.tagastaja(list));
+		
 	}
 
 	private ArrayList<ArrayList<Double>> textFieldToList(
