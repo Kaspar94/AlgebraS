@@ -1,4 +1,4 @@
-package projekt;
+package application;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,9 +9,16 @@ class Cramer {
 	private ArrayList<ArrayList<Double>> cramerList;
 	private int dRows, dCols;
 
+	
+	public Cramer(ArrayList<ArrayList<Double>> elemendid, ArrayList<Double> vastused) {
+		this.cramerList = elemendid;
+		this.vastus = vastused;
+		this.dCols = elemendid.size();
+		this.dRows = elemendid.get(0).size();
+	}
 	public Cramer(Scanner sc) {
 		System.out
-				.println("Sisesta vırrandid ¸kshaaval, t¸hik eraldajaks: (Lıpetamiseks ..)");
+				.println("Sisesta v√µrrandid √ºkshaaval, t√ºhik eraldajaks: (L√µpetamiseks ..)");
 		this.cramerList = new ArrayList<ArrayList<Double>>();
 		int rowCount = 0;
 		String pp = sc.nextLine();
@@ -21,8 +28,8 @@ class Cramer {
 			this.vastus.add(Double.parseDouble(row[row.length - 1]));
 			this.tundmatud = new StringBuilder[row.length - 1]; // siin
 																// massiivis
-																// hoiame kıiki
-																// vırrandite
+																// hoiame k√µiki
+																// v√µrrandite
 																// tundmatuid
 			this.tundmatud = tundmatuteLeidja(row);
 			if (kontrolli_pikkust(row.length - 1) == false) {
@@ -76,22 +83,22 @@ class Cramer {
 	}
 
 	private double[] digifier(String[] s) {
-		double[] uusRida = new double[s.length]; // siin massiivis hoiame kıiki
-													// vırrandite kordajaid
+		double[] uusRida = new double[s.length]; // siin massiivis hoiame k√µiki
+													// v√µrrandite kordajaid
 
 		for (int k = 0; k < s.length; k++) {
 			StringBuilder uus = new StringBuilder(s[k]); // s[k] on mingi veeru
-															// ¸ks element
-															// n‰iteks vırrandi
+															// √ºks element
+															// n√§iteks v√µrrandi
 															// 3x2 + 2x5 + 3x7
-															// puhul vıib see
-															// olla n‰iteks 3x2,
+															// puhul v√µib see
+															// olla n√§iteks 3x2,
 															// oleneb k-st (kui
 															// k = 1, siis s[1]
 															// = 3x2).
 
-			for (int i = 0; i < uus.length(); i++) { // ts¸kkel, mis k‰ib l‰bi
-														// stringi kıik
+			for (int i = 0; i < uus.length(); i++) { // ts√ºkkel, mis k√§ib l√§bi
+														// stringi k√µik
 														// elemendid(charid)
 				if (uus.indexOf("-") != i) { // kui leima miinuse, siis peame
 												// teistmoodi otsima
@@ -122,8 +129,8 @@ class Cramer {
 																			// kui
 																			// element
 																			// pole
-																			// t‰ht
-																			// vıtame
+																			// t√§ht
+																			// v√µtame
 																			// numbreid
 							jarjend[r - 1] = uus.charAt(r + i);
 						} else {
@@ -181,7 +188,7 @@ class Cramer {
 			Determinant c = new Determinant(list);
 			System.out.println("Asendades " + this.tundmatud[i]
 					+ "-de veeru vastustega saame " + c.calculate_det()
-					+ ", seega on " + this.tundmatud[i] + " v‰‰rtus "
+					+ ", seega on " + this.tundmatud[i] + " v√§√§rtus "
 					+ (c.calculate_det() / algDet));
 
 			for (int k = 0; k < this.dRows; k++) {
@@ -189,5 +196,36 @@ class Cramer {
 			}
 		}
 
+	}
+	
+	public ArrayList<Double> tagastaja(ArrayList<ArrayList<Double>> elemendid) {
+		
+		ArrayList<ArrayList<Double>> ajutine = (ArrayList<ArrayList<Double>>) cramerList.clone();
+		double algDet = new Determinant(this.cramerList).calculate_det();
+		ArrayList<ArrayList<Double>> list = new ArrayList<ArrayList<Double>>();
+		ArrayList<Double> tulemused = new ArrayList<Double>(); //Siia tulevad l√µppvastused ehk tundmatute v√§√§rtused
+		
+		for (int i = 0; i < this.dRows; i++) {
+			list.add(new ArrayList<Double>());
+			for (int k = 0; k < this.dCols; k++) {
+				list.get(i).add(this.cramerList.get(i).get(k));
+			}
+		}
+		for (int i = 0; i < this.dCols; i++) {
+			System.out.println("Ajutine on: " + ajutine);
+			list = elemendid;
+			System.out.println(elemendid);
+			System.out.println("List on:" + list);
+			for (int k = 0; k < this.dRows; k++) {
+				list.get(k).set(i, vastus.get(k));
+			}
+			Determinant c = new Determinant(list);
+			System.out.println("Uus det on: " + c.calculate_det() + " ja det list on: " + list);
+			System.out.println("Algne det on: " + algDet);
+			tulemused.add((c.calculate_det()/algDet));
+		}
+		
+		return tulemused;
+		
 	}
 }
