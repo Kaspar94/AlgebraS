@@ -1,15 +1,16 @@
-package application;
+ppackage application;
 
 import java.util.ArrayList;
 
 import application.Cramer;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ObservableValue;	
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -28,6 +29,23 @@ public class MatrixInterface extends Application {
 	private TextField vastusA, vastusB;
 	private ArrayList<TextField> answers;
 	private Error errorHandler;
+	private static final String WORDS = 
+			    "See programm on mõeldud maatriksiga seotud operatsioonide tegemiseks.\n" +
+			    "Programmi võimalused:\n" +
+			    "Maatriksi arvuga läbi korrutamine\n" +
+			    "Maatriksite liitmine\n" +
+			    "Maatriksite korrutamine\n" +
+			    "Maatriksite transponeerimine\n" +
+			    "Determinandi leidmine\n" +
+			    "Crameri kasutamine\n" +
+			    "\n" +
+			    "Programmi kasutamine:\n" +
+			    "Maatriksi määramiseks tuleb Size taga olevatesse lahtritesse panna\n" +
+			    "maatriksi mõõtmed (esimesse veergu ridade arv, teisse veergude arv)\n" +
+			    "ning seejärel vajutada update nuppu.\n" +
+			    "Maatriksi arvuga korrutamiseks kirjutada arv, millega korrutada, nupu taga olevasse lahtrisse.\n" +
+			    "Crameri valemite kasutamiseks kasutada nuppu Määra Cramer. Ilmunud maatriksi viimasesse veergu kirjutada\n" +
+			    "võrrandite vastused ning viimase veeru ees olevatesse veergudesse kirjutada tundmatute kordajad.";
 
 	public void start(Stage primaryStage) {
 		errorHandler = new Error();
@@ -378,11 +396,12 @@ public class MatrixInterface extends Application {
 		Button cramer_a = new Button("Kasuta Cramerit");
 		Button korruta_b = new Button("Korruta maatriksiga B");
 		Button det_a = new Button("Arvuta determinant");
+		Button info = new Button("Programmi info");
 		vastusA = new TextField();
 		vastusA.setPrefSize(50, 20);
 		determinant.getChildren().addAll(det_a, vastusA);
 		vb.getChildren().addAll(puhasta, multiplication, liida_b, transponeeri,
-				korruta_b, determinant, cramer_a);
+				korruta_b, determinant, cramer_a, info);
 
 		multiply.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
@@ -444,6 +463,23 @@ public class MatrixInterface extends Application {
 			public void handle(MouseEvent e) {
 				listA = textFieldToList(elementsA, colsA);
 				cramerArvutus(listA);
+				
+			}
+		});
+		
+		info.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				
+				HBox hbox = new HBox();
+				Label label = new Label(WORDS);
+			    label.setWrapText(true);
+			    label.setStyle("-fx-font-family: \"Comic Sans MS\"; -fx-font-size: 12; -fx-text-fill: darkgreen;");
+			    hbox.getChildren().add(label);
+				Stage stage = new Stage();
+	            stage.setTitle("Informatsioon");
+	            stage.setScene(new Scene(hbox, 400, 370));
+	            stage.setResizable(false);
+	            stage.show();
 				
 			}
 		});
