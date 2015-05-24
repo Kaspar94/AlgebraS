@@ -13,8 +13,8 @@ class Cramer {
 	public Cramer(ArrayList<ArrayList<Double>> elemendid, ArrayList<Double> vastused) {
 		this.cramerList = elemendid;
 		this.vastus = vastused;
-		this.dCols = elemendid.size();
-		this.dRows = elemendid.get(0).size();
+		this.dRows = elemendid.size();
+		this.dCols = elemendid.get(0).size();
 	}
 	public Cramer(Scanner sc) {
 		System.out
@@ -198,27 +198,32 @@ class Cramer {
 
 	}
 	
-	public ArrayList<Double> tagastaja(ArrayList<ArrayList<Double>> elemendid) {
+	public ArrayList<Double> tagastaja() {
 		
-		ArrayList<ArrayList<Double>> ajutine = (ArrayList<ArrayList<Double>>) cramerList.clone();
 		double algDet = new Determinant(this.cramerList).calculate_det();
 		ArrayList<ArrayList<Double>> list = new ArrayList<ArrayList<Double>>();
 		ArrayList<Double> tulemused = new ArrayList<Double>(); //Siia tulevad lõppvastused ehk tundmatute väärtused
 		
-		for (int i = 0; i < this.dRows; i++) {
-			list.add(new ArrayList<Double>());
-			for (int k = 0; k < this.dCols; k++) {
-				list.get(i).add(this.cramerList.get(i).get(k));
-			}
-		}
+		
+		
+		
 		for (int i = 0; i < this.dCols; i++) {
-			System.out.println("Ajutine on: " + ajutine);
-			list = elemendid;
-			System.out.println(elemendid);
+			
+			list.clear();
+			
+			for (int j = 0; j < this.dRows; j++) {
+				list.add(new ArrayList<Double>());
+				for (int n = 0; n < this.dCols; n++) {
+					list.get(j).add(this.cramerList.get(j).get(n));
+				}
+			
+			}
+			
 			System.out.println("List on:" + list);
 			for (int k = 0; k < this.dRows; k++) {
 				list.get(k).set(i, vastus.get(k));
 			}
+			
 			Determinant c = new Determinant(list);
 			System.out.println("Uus det on: " + c.calculate_det() + " ja det list on: " + list);
 			System.out.println("Algne det on: " + algDet);
