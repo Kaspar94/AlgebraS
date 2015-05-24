@@ -1,4 +1,4 @@
-package projekt;
+package application;
 
 import java.util.ArrayList;
 
@@ -45,7 +45,7 @@ class Determinant extends Matrix {
 		}
 	}
 
-	private double sarrus() throws FailException {
+	private double sarrus() throws Exception {
 
 		double sum = 0;
 		if (dRows == 3 && dCols == 3) {
@@ -61,7 +61,7 @@ class Determinant extends Matrix {
 			return sum;
 
 		} else {
-			throw new FailException();
+			throw new Exception();
 		}
 	}
 
@@ -73,22 +73,22 @@ class Determinant extends Matrix {
 
 	}
 
-	public double x2() throws FailException {
+	public double x2() throws Exception {
 		if (this.dRows == 2 && this.dCols == 2) {
 			return this.matrixList.get(0).get(0)
 					* this.matrixList.get(1).get(1)
 					- this.matrixList.get(0).get(1)
 					* this.matrixList.get(1).get(0);
 		} else {
-			throw new FailException();
+			throw new Exception();
 		}
 	}
 
-	public double x1() throws FailException {
+	public double x1() throws Exception {
 		if (this.dRows == 1 && this.dCols == 1) {
 			return this.matrixList.get(0).get(0);
 		} else {
-			throw new FailException();
+			throw new Exception();
 		}
 	}
 
