@@ -2,15 +2,13 @@ package application;
 
 import java.util.ArrayList;
 
-import application.Cramer;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;	
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -25,27 +23,9 @@ public class MatrixInterface extends Application {
 	private ArrayList<TextField> elementsA, elementsB;
 	private ArrayList<ArrayList<Double>> listA;
 	private ArrayList<ArrayList<Double>> listB;
-	// private TextField rowCountA, colCountA, rowCountB, colCountB;
 	private TextField vastusA, vastusB;
 	private ArrayList<TextField> answers;
 	private Error errorHandler;
-	private static final String WORDS = 
-			    "See programm on mõeldud maatriksiga seotud operatsioonide tegemiseks.\n" +
-			    "Programmi võimalused:\n" +
-			    "Maatriksi arvuga läbi korrutamine\n" +
-			    "Maatriksite liitmine\n" +
-			    "Maatriksite korrutamine\n" +
-			    "Maatriksite transponeerimine\n" +
-			    "Determinandi leidmine\n" +
-			    "Crameri kasutamine\n" +
-			    "\n" +
-			    "Programmi kasutamine:\n" +
-			    "Maatriksi määramiseks tuleb Size taga olevatesse lahtritesse panna\n" +
-			    "maatriksi mõõtmed (esimesse veergu ridade arv, teisse veergude arv)\n" +
-			    "ning seejärel vajutada update nuppu.\n" +
-			    "Maatriksi arvuga korrutamiseks kirjutada arv, millega korrutada, nupu taga olevasse lahtrisse.\n" +
-			    "Crameri valemite kasutamiseks kasutada nuppu Määra Cramer. Ilmunud maatriksi viimasesse veergu kirjutada\n" +
-			    "võrrandite vastused ning viimase veeru ees olevatesse veergudesse kirjutada tundmatute kordajad.";
 
 	public void start(Stage primaryStage) {
 		errorHandler = new Error();
@@ -88,14 +68,14 @@ public class MatrixInterface extends Application {
 		cramer.setPrefSize(100, 20);// nupu mõõtmed
 
 		row.getChildren().addAll(size, rowCount, colCount, update, cramer);
-																	// lisab
-																	// HBoxi
-																	// sulgudes
-																	// olevad
-																	// asjad,
-																	// horisontaalselt
-																	// üksteise
-																	// kõrvale
+		// lisab
+		// HBoxi
+		// sulgudes
+		// olevad
+		// asjad,
+		// horisontaalselt
+		// üksteise
+		// kõrvale
 
 		update.setOnMouseClicked(new EventHandler<MouseEvent>() { // hiiresündmus
 																	// käsitlemaks
@@ -132,7 +112,7 @@ public class MatrixInterface extends Application {
 				}
 			}
 		});
-		
+
 		cramer.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				try {
@@ -148,11 +128,13 @@ public class MatrixInterface extends Application {
 						if (matA.getChildren().size() == 3) {
 							matA.getChildren().remove(1);
 						}
-						matA.getChildren().add(1,
-								setCramerDisplay(r, c, elementsA, answers, "A"));
-					}
-					else {
-						errorHandler.newError("Rea ja veeru arv peavad olema võrdsed.");
+						matA.getChildren()
+								.add(1,
+										setCramerDisplay(r, c, elementsA,
+												answers, "A"));
+					} else {
+						errorHandler
+								.newError("Rea ja veeru arv peavad olema võrdsed.");
 					}
 
 				} catch (NumberFormatException n) { // kui proovitakse
@@ -163,7 +145,7 @@ public class MatrixInterface extends Application {
 				}
 			}
 		});
-		
+
 		return row; // tagastabki HBoxi
 	}
 
@@ -251,9 +233,9 @@ public class MatrixInterface extends Application {
 		// ning lisame..
 		currentMat.getChildren().add(1, vb);
 	}
-	
-	private VBox setCramerDisplay(int r, int c, ArrayList<TextField> elements, ArrayList<TextField> vastused,
-			String s) { // rows,
+
+	private VBox setCramerDisplay(int r, int c, ArrayList<TextField> elements,
+			ArrayList<TextField> vastused, String s) { // rows,
 		// cols,
 		// loome uued textfieldid
 		elements.clear(); // puhastame et uued lisada
@@ -265,43 +247,48 @@ public class MatrixInterface extends Application {
 		for (int i = 0; i < r; i++) {
 			HBox rida = new HBox(); // igale reale hbox
 			for (int j = 0; j < c; j++) {
-				
-				if (j != c-1) {
+
+				if (j != c - 1) {
 					TextField temp = new TextField();
-					temp.textProperty().addListener(new ChangeListener<String>() {
-						public void changed(ObservableValue<? extends String> arg0,
-								String arg1, String arg2) {
-							errorHandler.resetCount();
-						}
-					});
+					temp.textProperty().addListener(
+							new ChangeListener<String>() {
+								public void changed(
+										ObservableValue<? extends String> arg0,
+										String arg1, String arg2) {
+									errorHandler.resetCount();
+								}
+							});
 					temp.setPrefWidth(45);
 					temp.setPrefHeight(30);
 					elements.add(temp); // et p22seksime hiljem ligi
 					rida.getChildren().add(temp);
 
-				}
-				else {
+				} else {
 					TextField temp = new TextField();
 					TextField vastus = new TextField();
-					temp.textProperty().addListener(new ChangeListener<String>() {
-						public void changed(ObservableValue<? extends String> arg0,
-								String arg1, String arg2) {
-							errorHandler.resetCount();
-						}
-					});
-					vastus.textProperty().addListener(new ChangeListener<String>() {
-						public void changed(ObservableValue<? extends String> arg0,
-								String arg1, String arg2) {
-							errorHandler.resetCount();
-						}
-					});
+					temp.textProperty().addListener(
+							new ChangeListener<String>() {
+								public void changed(
+										ObservableValue<? extends String> arg0,
+										String arg1, String arg2) {
+									errorHandler.resetCount();
+								}
+							});
+					vastus.textProperty().addListener(
+							new ChangeListener<String>() {
+								public void changed(
+										ObservableValue<? extends String> arg0,
+										String arg1, String arg2) {
+									errorHandler.resetCount();
+								}
+							});
 					temp.setPrefWidth(45);
 					temp.setPrefHeight(30);
 					vastus.setPrefWidth(35);
 					vastus.setPrefHeight(30);
 					elements.add(temp); // et p22seksime hiljem ligi
 					vastused.add(vastus);
-					rida.getChildren().addAll(temp,vastus);
+					rida.getChildren().addAll(temp, vastus);
 				}
 			}
 			vb.getChildren().add(rida);
@@ -401,12 +388,11 @@ public class MatrixInterface extends Application {
 		Button cramer_a = new Button("Kasuta Cramerit");
 		Button korruta_b = new Button("Korruta maatriksiga B");
 		Button det_a = new Button("Arvuta determinant");
-		Button info = new Button("Programmi info");
 		vastusA = new TextField();
 		vastusA.setPrefSize(50, 20);
 		determinant.getChildren().addAll(det_a, vastusA);
 		vb.getChildren().addAll(puhasta, multiplication, liida_b, transponeeri,
-				korruta_b, determinant, cramer_a, info);
+				korruta_b, determinant, cramer_a);
 
 		multiply.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
@@ -463,29 +449,12 @@ public class MatrixInterface extends Application {
 				detArvutaja(listA, vastusA);
 			}
 		});
-		
+
 		cramer_a.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e) {
 				listA = textFieldToList(elementsA, colsA);
 				cramerArvutus(listA);
-				
-			}
-		});
-		
-		info.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent e) {
-				
-				HBox hbox = new HBox();
-				Label label = new Label(WORDS);
-			    label.setWrapText(true);
-			    label.setStyle("-fx-font-family: \"Comic Sans MS\"; -fx-font-size: 12; -fx-text-fill: darkgreen;");
-			    hbox.getChildren().add(label);
-				Stage stage = new Stage();
-	            stage.setTitle("Informatsioon");
-	            stage.setScene(new Scene(hbox, 400, 370));
-	            stage.setResizable(false);
-	            stage.show();
-				
+
 			}
 		});
 
@@ -530,6 +499,8 @@ public class MatrixInterface extends Application {
 
 	private void transponeerija(ArrayList<ArrayList<Double>> list, VBox vb,
 			ArrayList<TextField> elements, String maatriks) {
+		if (list == null)
+			return;
 		if (!list.isEmpty()) {
 			try {
 				Matrix a = new Matrix(list);
@@ -565,27 +536,30 @@ public class MatrixInterface extends Application {
 			}
 		}
 	}
-	
+
 	private void cramerArvutus(ArrayList<ArrayList<Double>> list) {
-		
-		ArrayList<Double> vastused = new ArrayList<Double>();
-		
-		for (int i = 0; i < answers.size(); i++) {
-			double solution = Double.parseDouble(answers.get(i).getText());
-			vastused.add(solution);
+		try {
+			ArrayList<Double> vastused = new ArrayList<Double>();
+
+			for (int i = 0; i < answers.size(); i++) {
+				double solution = Double.parseDouble(answers.get(i).getText());
+				vastused.add(solution);
+			}
+
+			Cramer cramer = new Cramer(list, vastused);
+
+			ArrayList<Double> tulemused = cramer.tagastaja();
+
+			clear_textField(elementsA);
+			vastusA.clear();
+
+			for (int s = 0; s < tulemused.size(); s++) {
+				answers.get(s).setText(tulemused.get(s).toString());
+			}
+		} catch (Exception e) {
+			errorHandler.newError("Viga " + e.getMessage());
 		}
-		
-		Cramer cramer = new Cramer(list,vastused);
-		
-		ArrayList<Double> tulemused = cramer.tagastaja(); 
-		
-		clear_textField(elementsA);
-		vastusA.clear();
-		
-		for (int s = 0; s < tulemused.size(); s++) {
-			answers.get(s).setText(tulemused.get(s).toString());
-		}
-		
+
 	}
 
 	private void detArvutaja(ArrayList<ArrayList<Double>> list, TextField vastus) {
