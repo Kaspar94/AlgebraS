@@ -1,4 +1,4 @@
-ppackage application;
+package application;
 
 import java.util.ArrayList;
 
@@ -140,15 +140,20 @@ public class MatrixInterface extends Application {
 					// saame k'tte soovitutd mootmed
 					int r = Integer.parseInt(rowCount.getText());
 					int c = Integer.parseInt(colCount.getText());
-					colsA = c;
-					// kustutame vanad teksfieldid
-					elementsA = new ArrayList<TextField>();
-					answers = new ArrayList<TextField>();
-					if (matA.getChildren().size() == 3) {
-						matA.getChildren().remove(1);
+					if (r == c) {
+						colsA = c;
+						// kustutame vanad teksfieldid
+						elementsA = new ArrayList<TextField>();
+						answers = new ArrayList<TextField>();
+						if (matA.getChildren().size() == 3) {
+							matA.getChildren().remove(1);
+						}
+						matA.getChildren().add(1,
+								setCramerDisplay(r, c, elementsA, answers, "A"));
 					}
-					matA.getChildren().add(1,
-							setCramerDisplay(r, c, elementsA, answers, "A"));
+					else {
+						errorHandler.newError("Rea ja veeru arv peavad olema võrdsed.");
+					}
 
 				} catch (NumberFormatException n) { // kui proovitakse
 													// skeemitada
@@ -567,12 +572,19 @@ public class MatrixInterface extends Application {
 		
 		for (int i = 0; i < answers.size(); i++) {
 			double solution = Double.parseDouble(answers.get(i).getText());
-			System.out.println(solution);
 			vastused.add(solution);
 		}
 		
 		Cramer cramer = new Cramer(list,vastused);
-		System.out.println(cramer.tagastaja(list));
+		
+		ArrayList<Double> tulemused = cramer.tagastaja(); 
+		
+		clear_textField(elementsA);
+		vastusA.clear();
+		
+		for (int s = 0; s < tulemused.size(); s++) {
+			answers.get(s).setText(tulemused.get(s).toString());
+		}
 		
 	}
 
